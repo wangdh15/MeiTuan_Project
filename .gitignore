@@ -108,3 +108,5 @@ log/
 model/
 temp/
 result/
+ctr_data/
+.idea/

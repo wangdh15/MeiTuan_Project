@@ -31,8 +31,8 @@ class data_loader:
         '''
         file_list = os.listdir(self.data_dir)
         file_list = [file for file in file_list if file.endswith("csv")]
-        self.poi = pd.read_csv(os.path.join(self.data_dir, "table_poi_detail.csv"))
-        self.uuid = pd.read_csv(os.path.join(self.data_dir, "table_uuid_detail.csv"))
+        self.poi = pd.read_csv(os.path.join("./ctr_data/Processed_Data", "table_poi_detail.csv"))
+        self.uuid = pd.read_csv(os.path.join("./ctr_data.Processed_Data", "table_uuid_detail.csv"))
         self.train_data = pd.read_csv(os.path.join(self.data_dir, "table_impr_click_action_train.csv"))
         self.test_data = pd.read_csv(os.path.join(self.data_dir, "table_impr_click_action_test.csv"))
         self.request_data = pd.read_csv(os.path.join(self.data_dir, "table_request_detail.csv"))

@@ -38,8 +38,8 @@ cv_folds = 5
 early_stop_round = 50
 seed = 3
 save_model_path = "model/lgb.txt"
-original_data_dir = "../ctr_data"
-preprocessed_data_dir = "../ctr_data/Processed_Feature"
-save_result_path = "./result/" + str(params['num_leaves']) + ".csv"
+original_data_dir = "ctr_data"
+preprocessed_data_dir = "ctr_data/Processed_Feature"
+save_result_path = "result/" + str(params['num_leaves']) + ".csv"
 
 
