@@ -20,7 +20,7 @@ cv_folds = None
 early_stop_round = 30
 seed = 5
 save_model_path = "./lgm.txt"
-train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", 'pos']
+train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", 'pos', 'new_time']
 # categorical_feature = ['gender', 'job', 'cate_level1', 'cate_level2', 'cate_level3', 'area_id']
 categorical_feature = None
 
@@ -32,13 +32,17 @@ categorical_feature = None
 
 # tester
 test_result_file = "./result_upload.csv"
-test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", "ID"]
+test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", "ID", 'new_time']
 
 # data_loader
 # train_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Feature/train_origin_data.csv"
 # test_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Feature/test_origin_data.csv"
 train_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/train_plain.csv"
 test_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/test_plain.csv"
+
+#impr_click_action_feature
+train_time_feature = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/train_time_feature.csv"
+test_time_feature = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/test_time_feature.csv"
 
 # poi_feature_extractor
 poi_deal_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/poi_deal_feature.csv"
