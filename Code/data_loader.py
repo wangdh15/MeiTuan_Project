@@ -7,6 +7,8 @@ import pickle
 from utils import check_path
 from feature_extractor.poi_feature import poi_feature_extractor
 from feature_extractor.user_feature import user_feature_extractor
+from feature_extractor.distance_feature import distance_feature_extractor
+from feature_extractor.cate_feature import cate_feature_extractor
 
 class data_loader:
     '''
@@ -22,7 +24,9 @@ class data_loader:
         self.config = config
         self.train_origin_data, self.test_origin_data = self.read_origin_data()       # 读取原始数据
         self.poi_feature_extractor = poi_feature_extractor(self.config, self.train_origin_data)   # poi特征提取器
-        self.user_feature_extractor = user_feature_extractor(self.config, self.test_origin_data)  # user特征提取器
+        # self.user_feature_extractor = user_feature_extractor(self.config, self.train_origin_data)  # user特征提取器
+        self.distance_feature_extractor = distance_feature_extractor(self.config, self.train_origin_data) # 距离特征提取器
+        # self.cate_feature_extractor = cate_feature_extractor(self.config, self.train_origin_data) # cate特征提取器
 #         self.read_data()
 
 
@@ -42,14 +46,20 @@ class data_loader:
         '''
         # 调用各个不同的特征提取器对外的唯一接口，得到提取到的特征
         poi_feature = self.poi_feature_extractor.get_feature()
-        user_feature = self.user_feature_extractor.get_feature()
+        # user_feature = self.user_feature_extractor.get_feature()
+        train_distance_feature, test_distance_feature = self.distance_feature_extractor.get_feature()
+        # cate_history_click_rate = self.cate_feature_extractor.get_feature()
 
         # 将各个不同的特征提取器按照其主键拼接到训练集和测试集中
         train_merged_feature = pd.merge(self.train_origin_data, poi_feature, on="poi_id", how='left')
-        train_merged_feature = pd.merge(train_merged_feature, user_feature_extractor, on="uuid", how="left")
+        # train_merged_feature = pd.merge(train_merged_feature, user_feature, on="uuid", how="left")
+        train_merged_feature = pd.merge(train_merged_feature, train_distance_feature, on="request_id", how='left')
+        # train_merged_feature = pd.merge(train_merged_feature, cate_history_click_rate, on="cate_id", how='left')
 
         test_merged_feature = pd.merge(self.test_origin_data, poi_feature, on="poi_id", how='left')
-        test_merged_feature = pd.merge(test_merged_feature, user_feature_extractor, on="uuid", how="left")
+        # test_merged_feature = pd.merge(test_merged_feature, user_feature, on="uuid", how="left")
+        test_merged_feature = pd.merge(test_merged_feature, test_distance_feature, on='ID', how="left")
+        # test_merged_feature = pd.merge(test_merged_feature, cate_history_click_rate, on="cate_id", how='left')
 
         return train_merged_feature, test_merged_feature
 
@@ -72,14 +82,13 @@ class data_loader:
         '''
         # 调用merge_feature，合并各种特征
         #
-        # train_merged_feature, test_merged_feature = self.merge_feature()
-        #
-        # train_X, train_Y, test_X = self.post_process(train_merged_feature, test_merged_feature)
-        #
-        # return train_X, train_Y, test_X
+        train_merged_feature, test_merged_feature = self.merge_feature()
 
-        train_X, train_Y, test_X = self.post_process(self.train_origin_data, self.test_origin_data)
+        train_X, train_Y, test_X = self.post_process(train_merged_feature, test_merged_feature)
+
         return train_X, train_Y, test_X
+
+
 
 
 #         test

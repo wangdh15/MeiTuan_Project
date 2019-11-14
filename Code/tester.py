@@ -32,6 +32,7 @@ class tester:
         test_X_input = self.pre_process()
 
         print("begin test.....")
+        print('X_test.shape={}'.format(test_X_input.shape))
         y_pred_prob = model.predict(test_X_input)
         self.test_X['action'] = y_pred_prob
         self.test_X[['ID', 'action']].to_csv(self.config.test_result_file,index=False,header=True)
