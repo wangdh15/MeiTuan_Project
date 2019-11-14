@@ -20,7 +20,8 @@ early_stop_round = 30
 seed = 5
 save_model_path = "./lgm.txt"
 train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", 'pos']
-categorical_feature = ['gender', 'job', 'cate_level1', 'cate_level2', 'cate_level3', 'area_id']
+# categorical_feature = ['gender', 'job', 'cate_level1', 'cate_level2', 'cate_level3', 'area_id']
+categorical_feature = None
 
 
 

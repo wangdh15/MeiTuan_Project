@@ -52,7 +52,10 @@ class trainer:
         early_stop_round = config.early_stop_round
         seed = config.seed
         if cv_folds is not None:
-            dtrain = lgb.Dataset(X_train, label=y_train, categorical_feature=config.categorical_feature)
+            if config.categorical_feature is not None:
+                dtrain = lgb.Dataset(X_train, label=y_train, categorical_feature=config.categorical_feature)
+            else:
+                dtrain = lgb.Dataset(X_train, label=y_train)
             cv_result = lgb.cv(params, dtrain, max_round, nfold=cv_folds, seed=seed, verbose_eval=True,
                                metrics='auc', early_stopping_rounds=early_stop_round, show_stdv=False)
             # 最优模型，最优迭代次数
@@ -62,12 +65,15 @@ class trainer:
         else:
             X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.2, random_state=43)
             X_valid1, X_valid2, y_valid1, y_valid2 = train_test_split(X_valid, y_valid, test_size=0.5, random_state=88)
-            dtrain = lgb.Dataset(X_train, label=y_train, categorical_feature=config.categorical_feature)
-            # dtrain = lgb.Dataset(X_train, label=y_train)
-            dvalid1 = lgb.Dataset(X_valid1, label=y_valid1, categorical_feature=config.categorical_feature)
-            # dvalid1 = lgb.Dataset(X_valid1, label=y_valid1)
-            dvalid2 = lgb.Dataset(X_valid2, label=y_valid2, categorical_feature=config.categorical_feature)
-            # dvalid2 = lgb.Dataset(X_valid2, label=y_valid2)
+            # 是否区分类型特征
+            if config.categorical_feature is not None:
+                dtrain = lgb.Dataset(X_train, label=y_train, categorical_feature=config.categorical_feature)
+                dvalid1 = lgb.Dataset(X_valid1, label=y_valid1, categorical_feature=config.categorical_feature)
+                dvalid2 = lgb.Dataset(X_valid2, label=y_valid2, categorical_feature=config.categorical_feature)
+            else:
+                dtrain = lgb.Dataset(X_train, label=y_train)
+                dvalid1 = lgb.Dataset(X_valid1, label=y_valid1)
+                dvalid2 = lgb.Dataset(X_valid2, label=y_valid2)
             watchlist = [dtrain, dvalid1, dvalid2]
             best_model = lgb.train(params, dtrain, max_round, valid_sets=watchlist, early_stopping_rounds=early_stop_round)
             best_round = best_model.best_iteration
