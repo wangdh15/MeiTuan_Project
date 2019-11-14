@@ -1,4 +1,4 @@
-
+# -*- coding:utf-8 -*-
 # trainer and tester
 params = {
     'objective': 'binary',
@@ -35,14 +35,14 @@ test_result_file = "./result_upload.csv"
 test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", "ID"]
 
 # data_loader
-# train_origin_file = "../ctr_data/Processed_Feature/train_origin_data.csv"
-# test_origin_file = "../ctr_data/Processed_Feature/test_origin_data.csv"
-train_origin_file = "../ctr_data/Processed_Data_2/train_plain.csv"
-test_origin_file = "../ctr_data/Processed_Data_2/test_plain.csv"
+# train_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Feature/train_origin_data.csv"
+# test_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Feature/test_origin_data.csv"
+train_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/train_plain.csv"
+test_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/test_plain.csv"
 
 # poi_feature_extractor
-poi_deal_feature_file = "../ctr_data/Processed_Data_2/poi_deal_feature.csv"
-poi_history_click_rate_file = "../ctr_data/Processed_Data_2/poi_history_click_rate.csv"
+poi_deal_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/poi_deal_feature.csv"
+poi_history_click_rate_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/poi_history_click_rate.csv"
 
 
 
@@ -50,10 +50,10 @@ poi_history_click_rate_file = "../ctr_data/Processed_Data_2/poi_history_click_ra
 
 
 # distance_feature_extractor
-train_distance_feature_file = "../ctr_data/Processed_Data_2/train_distance_feature.csv"
-test_distance_feature_file = "../ctr_data/Processed_Data_2/test_distance_feature.csv"
+train_distance_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/train_distance_feature.csv"
+test_distance_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/test_distance_feature.csv"
 
 # cate_feature_extractor
-cate_history_click_rate_file = "../ctr_data/Processed_Data_2/cate_history_click_rate.csv"
+cate_history_click_rate_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/cate_history_click_rate.csv"
 
 
