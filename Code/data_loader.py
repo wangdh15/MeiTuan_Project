@@ -49,25 +49,24 @@ class data_loader:
         :return: train_merged_feature, test_merged_feature
         '''
         # 调用各个不同的特征提取器对外的唯一接口，得到提取到的特征
+        # 取出类中的原始数据，便于后面的形式都一样
+        train_merged_feature = self.train_origin_data
+        test_merged_feature = self.test_origin_data
+
+        # 提取商户的团单的各种特征
         poi_feature = self.poi_feature_extractor.get_feature()
-        # user_feature = self.user_feature_extractor.get_feature()
+        train_merged_feature = pd.merge(train_merged_feature, poi_feature, on="poi_id", how='left')
+        test_merged_feature = pd.merge(test_merged_feature, poi_feature, on="poi_id", how='left')
+
+        # 提取训练集和测试集上的距离特征
         train_distance_feature, test_distance_feature = self.distance_feature_extractor.get_feature()
-        # cate_history_click_rate = self.cate_feature_extractor.get_feature()
-
-        train_impr_click_action_feature, test_impr_click_action_feature = self.impr_click_action_feature_extractor.get_feature()
-        self.train_origin_data = pd.merge(self.train_origin_data, train_impr_click_action_feature, on="request_id", how='left')
-        self.test_origin_data = pd.merge(self.test_origin_data, test_impr_click_action_feature, on="request_id", how='left')
-
-        # 将各个不同的特征提取器按照其主键拼接到训练集和测试集中
-        train_merged_feature = pd.merge(self.train_origin_data, poi_feature, on="poi_id", how='left')
-        # train_merged_feature = pd.merge(train_merged_feature, user_feature, on="uuid", how="left")
         train_merged_feature = pd.merge(train_merged_feature, train_distance_feature, on="request_id", how='left')
-        # train_merged_feature = pd.merge(train_merged_feature, cate_history_click_rate, on="cate_id", how='left')
-
-        test_merged_feature = pd.merge(self.test_origin_data, poi_feature, on="poi_id", how='left')
-        # test_merged_feature = pd.merge(test_merged_feature, user_feature, on="uuid", how="left")
         test_merged_feature = pd.merge(test_merged_feature, test_distance_feature, on='ID', how="left")
-        # test_merged_feature = pd.merge(test_merged_feature, cate_history_click_rate, on="cate_id", how='left')
+
+        # 提取 点击的时间特征
+        train_impr_click_action_feature, test_impr_click_action_feature = self.impr_click_action_feature_extractor.get_feature()
+        train_merged_feature = pd.merge(train_merged_feature, train_impr_click_action_feature, on="request_id", how='left')
+        test_merged_feature = pd.merge(test_merged_feature, test_impr_click_action_feature, on="ID", how='left')
 
         return train_merged_feature, test_merged_feature
 
@@ -81,7 +80,17 @@ class data_loader:
         train_X = train_merged_feature.drop(['action'], axis=1)
         train_Y = train_merged_feature['action']
         test_X = test_merged_feature
+
+        # 判断训练和测试的输入网路的特征个数是否相同
+        assert (train_X.shape[1] - len(self.config.train_droped_feature)) == (test_X.shape[1] - len(self.config.test_droped_feature))
+
+        # 判断测试集的数目是否发生变化
+        assert test_X.shape[0] == self.test_origin_data.shape[0]
+        print("train_X_input feature number is %d" % (train_X.shape[1] - len(self.config.train_droped_feature)))
+        print("test_X_input feature number is %d" % (test_X.shape[1] - len(self.config.test_droped_feature)))
+
         return train_X, train_Y, test_X
+
 
     def get_data(self):
         '''
@@ -95,18 +104,6 @@ class data_loader:
         train_X, train_Y, test_X = self.post_process(train_merged_feature, test_merged_feature)
 
         return train_X, train_Y, test_X
-
-
-
-
-#         test
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
 

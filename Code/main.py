@@ -1,15 +1,10 @@
 # -*- coding:utf-8 -*-
-import pandas
+import pandas as pd
 import os
-
-
-
 from trainer import trainer
 from tester import tester
 from data_loader import data_loader
 import config
-
-
 
 def mt():
     _data_loader = data_loader(config)
