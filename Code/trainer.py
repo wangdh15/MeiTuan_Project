@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import lightgbm as lgb
 from sklearn.model_selection import train_test_split
 import time
@@ -7,18 +8,23 @@ from utils import check_path
 from data_loader import data_loader
 import pandas as pd
 import os
+from sklearn import metrics
 
 
 class trainer:
 
-    def __init__(self, train_X, train_Y, config):
+    def __init__(self, data, config):
         '''
         初始化各个变量
         :param train_X:
         :param train_Y:
         '''
-        self.train_X = train_X
-        self.train_Y = train_Y
+        self.train_X = data['train_X']
+        self.train_Y = data['train_Y']
+        self.valid_X = data['valid_X']
+        self.valid_Y = data['valid_Y']
+        self.test_X = data['test_X']
+        self.test_Y = data['test_Y']
         self.config = config
         pass
 
@@ -29,12 +35,14 @@ class trainer:
         :return:
         '''
         # TODO 在输入到训练集中时，对训练数据的一些操作
-        train_X_input = self.train_X.drop(self.config.train_droped_feature, axis=1)
-        return train_X_input
+        self.train_X = self.train_X.drop(self.config.train_droped_feature, axis=1)
+        self.valid_X = self.valid_X.drop(self.config.train_droped_feature, axis=1)
+        self.test_X = self.test_X.drop(self.config.train_droped_feature, axis=1)
 
 
 
-    def lgb_fit(self, config, X_train, y_train):
+
+    def lgb_fit(self):
         """模型（交叉验证）训练，并返回最优迭代次数和最优的结果。
         Args:
             config: xgb 模型参数 {params, max_round, cv_folds, early_stop_round, seed, save_model_path}
@@ -48,38 +56,31 @@ class trainer:
         """
         params = config.params
         max_round = config.max_round
-        cv_folds = config.cv_folds
         early_stop_round = config.early_stop_round
         seed = config.seed
-        if cv_folds is not None:
-            if config.categorical_feature is not None:
-                dtrain = lgb.Dataset(X_train, label=y_train, categorical_feature=config.categorical_feature)
-            else:
-                dtrain = lgb.Dataset(X_train, label=y_train)
-            cv_result = lgb.cv(params, dtrain, max_round, nfold=cv_folds, seed=seed, verbose_eval=True,
-                               metrics='auc', early_stopping_rounds=early_stop_round, show_stdv=False)
-            # 最优模型，最优迭代次数
-            best_round = len(cv_result['auc-mean'])
-            best_auc = cv_result['auc-mean'][-1]  # 最好的 auc 值
-            best_model = lgb.train(params, dtrain, best_round, categorical_feature=config.categorical_feature)
+
+
+        # 是否区分类型特征
+        if config.categorical_feature is not None:
+            dtrain = lgb.Dataset(self.train_X, label=self.train_Y, categorical_feature=config.categorical_feature)
+            dvalid = lgb.Dataset(self.valid_X, label=self.valid_Y, categorical_feature=config.categorical_feature)
         else:
-            X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.2, random_state=43)
-            X_valid1, X_valid2, y_valid1, y_valid2 = train_test_split(X_valid, y_valid, test_size=0.5, random_state=88)
-            # 是否区分类型特征
-            if config.categorical_feature is not None:
-                dtrain = lgb.Dataset(X_train, label=y_train, categorical_feature=config.categorical_feature)
-                dvalid1 = lgb.Dataset(X_valid1, label=y_valid1, categorical_feature=config.categorical_feature)
-                dvalid2 = lgb.Dataset(X_valid2, label=y_valid2, categorical_feature=config.categorical_feature)
-            else:
-                dtrain = lgb.Dataset(X_train, label=y_train)
-                dvalid1 = lgb.Dataset(X_valid1, label=y_valid1)
-                dvalid2 = lgb.Dataset(X_valid2, label=y_valid2)
-            watchlist = [dtrain, dvalid1, dvalid2]
-            best_model = lgb.train(params, dtrain, max_round, valid_sets=watchlist, early_stopping_rounds=early_stop_round)
-            best_round = best_model.best_iteration
-            best_auc = best_model.best_score
-            cv_result = None
-        return best_model, best_auc, best_round, cv_result
+            dtrain = lgb.Dataset(self.train_X, label=self.train_Y)
+            dvalid = lgb.Dataset(self.valid_X, label=self.valid_Y)
+        watchlist = [dtrain, dvalid]
+
+        tic = time.time()
+        best_model = lgb.train(params, dtrain, max_round, valid_sets=watchlist, early_stopping_rounds=early_stop_round)
+        print('Time cost {}s'.format(time.time() - tic))
+
+        y_pred = best_model.predict(self.test_X)
+        test_auc = metrics.roc_auc_score(self.test_Y, y_pred)
+
+        best_round = best_model.best_iteration
+        best_auc = best_model.best_score
+
+        print('best_round={}, best_auc={}, test_auc={}'.format(best_round, best_auc, test_auc))
+        return best_model, test_auc
 
 
 
@@ -104,16 +105,16 @@ class trainer:
         统计对外的接口
         :return:
         '''
-        train_X_input = self.pre_process()
-        train_Y_input = self.train_Y
+        self.pre_process()
         print("begin train")
-        print('X_train.shape={}, Y_train.shape={}'.format(train_X_input.shape, train_Y_input.shape))
-        model = self.run_cv(train_X_input, train_Y_input, self.config)
+        print('X_train.shape={}, Y_train.shape={}'.format(self.train_X.shape, self.train_Y.shape))
+        print('X_valid.shape={}, Y_valid.shape={}'.format(self.valid_X.shape, self.valid_Y.shape))
+        print('X_test.shape={}, Y_test.shape={}'.format(self.test_X.shape, self.test_Y.shape))
+        model, test_auc = self.lgb_fit()
         model.save_model(self.config.save_model_path)
-        print("model is saved to %s"%config.save_model_path)
+        print("model is saved to %s" % config.save_model_path)
         print("train end")
-
-        return model
+        return model, test_auc
 #     lgb_predict(lgb_model, X_test, result_path)
 
 

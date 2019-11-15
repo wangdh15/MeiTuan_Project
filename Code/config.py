@@ -1,5 +1,5 @@
-
-# trainer and tester
+# -*- coding:utf-8 -*-
+# trainer
 params = {
     'objective': 'binary',
     'metric': {'auc'},
@@ -11,34 +11,42 @@ params = {
     'lambda_l1': 0,
     'lambda_l2': 5,
     # "device" : "gpu"
-    'num_thread': 20  # 线程数设置为真实的 CPU 数，一般12线程的机器有6个物理核
+    'num_thread': 25  # 线程数设置为真实的 CPU 数，一般12线程的机器有6个物理核
 }
 
 max_round = 10000
-# cv_folds = 5
-cv_folds = None
+# # cv_folds = 5
+# cv_folds = None
 early_stop_round = 30
 seed = 5
-save_model_path = "./lgm.txt"
-train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", 'pos']
-# categorical_feature = ['gender', 'job', 'cate_level1', 'cate_level2', 'cate_level3', 'area_id']
-categorical_feature = None
 
+save_model_path = "../Model/lgb_" + str(params['feature_fraction']) + "_" + str(params['bagging_fraction']) + ".txt"
 
-
-
-
-
+train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", 'pos',
+                        'new_day','new_time']
 
 # tester
-test_result_file = "./result_upload.csv"
-test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", "ID"]
+test_result_file = "../Result/result_upload_para_search.csv"
+test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", "ID",
+                       'new_day', 'new_time']
+
+
+# trainer and tester
+# categorical_feature = ['gender', 'job', 'cate_level1', 'cate_level2', 'cate_level3', 'area_id']
+categorical_feature = None
 
 # data_loader
 # train_origin_file = "../ctr_data/Processed_Feature/train_origin_data.csv"
 # test_origin_file = "../ctr_data/Processed_Feature/test_origin_data.csv"
 train_origin_file = "../ctr_data/Processed_Data_2/train_plain.csv"
 test_origin_file = "../ctr_data/Processed_Data_2/test_plain.csv"
+# data_augmentation = False
+data_augmentation = True
+
+
+#impr_click_action_feature
+train_time_feature_file = "../ctr_data/Processed_Data_2/train_time_feature.csv"
+test_time_feature_file = "../ctr_data/Processed_Data_2/test_time_feature.csv"
 
 # poi_feature_extractor
 poi_deal_feature_file = "../ctr_data/Processed_Data_2/poi_deal_feature.csv"
@@ -56,4 +64,5 @@ test_distance_feature_file = "../ctr_data/Processed_Data_2/test_distance_feature
 # cate_feature_extractor
 cate_history_click_rate_file = "../ctr_data/Processed_Data_2/cate_history_click_rate.csv"
 
-
+# pos_cate_feature_extractor
+pos_cate_feature_file = "../ctr_data/Processed_Data_2/pos_cate_feature.csv"
