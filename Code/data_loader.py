@@ -3,7 +3,6 @@ import os
 import pandas
 import numpy
 import pandas as pd
-import config
 import pickle
 from utils import check_path
 from feature_extractor.poi_feature import poi_feature_extractor
@@ -97,7 +96,7 @@ class data_loader:
         valid_set = train_merged_feature[int(0.8*len(train_merged_feature)) : int(0.9*len(train_merged_feature))]
         test_set = train_merged_feature[int(0.9*len(train_merged_feature)) : len(train_merged_feature)]
 
-        if config.data_augmentation:
+        if self.config.data_augmentation:
             # 如果需要数据增强的话，对训练集中的label为1的数据进行重复
             train_set_1 = train_set[train_set['action'] == 1]
             train_set_0 = train_set[train_set['action'] == 0]
@@ -116,13 +115,19 @@ class data_loader:
         # 需要上传的最终的测试集
         final_test_X = test_merged_feature
 
+        # drop掉不用的特征
+        train_X = train_X.drop(self.config.train_droped_feature, axis=1)
+        valid_X = valid_X.drop(self.config.train_droped_feature, axis=1)
+        test_X = test_X.drop(self.config.train_droped_feature, axis=1)
+        final_test_X = final_test_X.drop(self.config.test_droped_feature, axis=1)
+
         # 判断训练和测试的输入网路的特征个数是否相同
-        assert (train_X.shape[1] - len(self.config.train_droped_feature)) == (final_test_X.shape[1] - len(self.config.test_droped_feature))
+        assert (train_X.shape[1] ) == (final_test_X.shape[1])
 
         # 判断测试集的数目是否发生变化
         assert final_test_X.shape[0] == self.test_origin_data.shape[0]
-        print("train_X_input feature number is %d" % (train_X.shape[1] - len(self.config.train_droped_feature)))
-        print("test_X_input feature number is %d" % (final_test_X.shape[1] - len(self.config.test_droped_feature)))
+        print("train_X_input feature number is %d" % (train_X.shape[1]))
+        print("test_X_input feature number is %d" % (final_test_X.shape[1]))
 
         return train_X, train_Y, valid_X, valid_Y, test_X, test_Y, final_test_X
 

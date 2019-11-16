@@ -24,7 +24,7 @@ class distance_feature_extractor:
         '''
 
         if not recompu and os.path.exists(self.config.train_distance_feature_file):
-            print("load train_distance_feature from file")
+            print("load train_distance_feature from file : %s" % self.config.train_distance_feature_file)
             train_distance_feature = pd.read_csv(self.config.train_distance_feature_file)
             return train_distance_feature
         else:
@@ -43,7 +43,7 @@ class distance_feature_extractor:
         '''
 
         if not recompu and os.path.exists(self.config.test_distance_feature_file):
-            print("load test_distance_feature form file")
+            print("load test_distance_feature form file : %s" % self.config.test_distance_feature_file)
             test_distance_feature = pd.read_csv(self.config.test_distance_feature_file)
             return test_distance_feature
         else:

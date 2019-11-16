@@ -8,13 +8,40 @@ from data_loader import data_loader
 import config
 
 
-def mt():
+def mt_single():
+    '''
+    训练单个模型
+    :return:
+    '''
     _data_loader = data_loader(config)
     print("begin load data")
     data = _data_loader.get_data()
-    _tester = tester(data, config)
 
-    # 参数搜索
+    print("begin train")
+    _trainer = trainer(data)
+
+    model, test_auc = _trainer.train(config)
+
+    print("begin test")
+    _tester = tester(data)
+
+    _tester.test(model, config)
+
+
+def grif_search():
+    '''
+    对参数进行网格搜索
+    :param param_grid:
+    :return:
+    '''
+
+    _data_loader = data_loader(config)
+    print("begin load data")
+    data = _data_loader.get_data()
+    _trainer = trainer(data)
+    _tester = tester(data)
+
+
     best_auc = 0
     best_number_leaves = 0
     best_learning_rate = 0
@@ -30,9 +57,8 @@ def mt():
 
 
                 print("begin train")
-                _trainer = trainer(data, config)
 
-                model, test_auc = _trainer.train()
+                model, test_auc = _trainer.train(config)
 
                 if test_auc > best_auc:
 
@@ -43,22 +69,12 @@ def mt():
                     best_model = model
 
                     print("begin test")
-                    _tester.test(best_model)
+                    _tester.test(best_model, config)
 
     print("best para is  num_leaves:%d   learning_rate:%f  feature_fraction:%f, best_test_auc is %f" % (best_number_leaves, best_learning_rate,best_feature_fraction, best_auc))
 
-    # general
-    # print("begin train")
-    # _trainer = trainer(data, config)
-    #
-    # model, test_auc = _trainer.train()
-    #
-    # print("begin test")
-    # _tester = tester(data, config)
-    #
-    # _tester.test(model)
-
 
 if __name__ == '__main__':
-    mt()
 
+    mt_single()
+    # grif_search()

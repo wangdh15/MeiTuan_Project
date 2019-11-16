@@ -1,19 +1,12 @@
 # -*- coding:utf-8 -*-
 import lightgbm as lgb
-from sklearn.model_selection import train_test_split
 import time
-import logging.handlers
-import config
-from utils import check_path
-from data_loader import data_loader
-import pandas as pd
-import os
 from sklearn import metrics
 
 
 class trainer:
 
-    def __init__(self, data, config):
+    def __init__(self, data):
         '''
         初始化各个变量
         :param train_X:
@@ -25,7 +18,6 @@ class trainer:
         self.valid_Y = data['valid_Y']
         self.test_X = data['test_X']
         self.test_Y = data['test_Y']
-        self.config = config
         pass
 
 
@@ -54,16 +46,16 @@ class trainer:
             best_auc: float, 在测试集上面的 AUC 值。
             best_round: int, 最优迭代次数。
         """
-        params = config.params
-        max_round = config.max_round
-        early_stop_round = config.early_stop_round
-        seed = config.seed
+        params = self.config.params
+        max_round = self.config.max_round
+        early_stop_round = self.config.early_stop_round
+        seed = self.config.seed
 
 
         # 是否区分类型特征
-        if config.categorical_feature is not None:
-            dtrain = lgb.Dataset(self.train_X, label=self.train_Y, categorical_feature=config.categorical_feature)
-            dvalid = lgb.Dataset(self.valid_X, label=self.valid_Y, categorical_feature=config.categorical_feature)
+        if self.config.categorical_feature is not None:
+            dtrain = lgb.Dataset(self.train_X, label=self.train_Y, categorical_feature=self.config.categorical_feature)
+            dvalid = lgb.Dataset(self.valid_X, label=self.valid_Y, categorical_feature=self.config.categorical_feature)
         else:
             dtrain = lgb.Dataset(self.train_X, label=self.train_Y)
             dvalid = lgb.Dataset(self.valid_X, label=self.valid_Y)
@@ -100,19 +92,20 @@ class trainer:
         return lgb_model
 
 
-    def train(self):
+    def train(self, config):
         '''
         统计对外的接口
         :return:
         '''
-        self.pre_process()
+        # self.pre_process()
+        self.config = config
         print("begin train")
         print('X_train.shape={}, Y_train.shape={}'.format(self.train_X.shape, self.train_Y.shape))
         print('X_valid.shape={}, Y_valid.shape={}'.format(self.valid_X.shape, self.valid_Y.shape))
         print('X_test.shape={}, Y_test.shape={}'.format(self.test_X.shape, self.test_Y.shape))
         model, test_auc = self.lgb_fit()
         model.save_model(self.config.save_model_path)
-        print("model is saved to %s" % config.save_model_path)
+        print("model is saved to %s" % self.config.save_model_path)
         print("train end")
         return model, test_auc
 #     lgb_predict(lgb_model, X_test, result_path)

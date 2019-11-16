@@ -11,10 +11,10 @@ params = {
     'lambda_l1': 0,
     'lambda_l2': 5,
     # "device" : "gpu"
-    'num_thread': 25  # 线程数设置为真实的 CPU 数，一般12线程的机器有6个物理核
+    'num_thread': 30  # 线程数设置为真实的 CPU 数，一般12线程的机器有6个物理核
 }
 
-max_round = 10000
+max_round = 10
 # # cv_folds = 5
 # cv_folds = None
 early_stop_round = 30

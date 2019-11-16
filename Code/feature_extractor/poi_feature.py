@@ -22,7 +22,7 @@ class poi_feature_extractor:
         '''
 
         if not recompu and os.path.exists(self.config.poi_deal_feature_file):
-            print("load poi_deal_feature from file")
+            print("load poi_deal_feature from file : %s" % self.config.poi_deal_feature_file)
             poi_deal_feature = pd.read_csv(self.config.poi_deal_feature_file)
             return poi_deal_feature
         else:
@@ -30,6 +30,7 @@ class poi_feature_extractor:
             # TODO 重原始文件中计算特征并持久化到硬盘上
             print("compute poi_deal_feature from scratch")
             poi_deal_feature = None
+            print("poi_deal_feature is stored to %s" % self.config.poi_deal_feature_file)
             return poi_deal_feature
 
     def poi_history_click_rate(self, recompu=False):
@@ -41,7 +42,7 @@ class poi_feature_extractor:
         '''
 
         if not recompu and os.path.exists(self.config.poi_history_click_rate_file):
-            print("load poi_history_click_rate form file")
+            print("load poi_history_click_rate from file : %s" % self.config.poi_history_click_rate_file)
             poi_history_click_rate = pd.read_csv(self.config.poi_history_click_rate_file)
             return poi_history_click_rate
         else:
@@ -49,6 +50,7 @@ class poi_feature_extractor:
             # TODO 重原始文件中得到每个商户历史上被点击的概率并持久化到硬盘上
             print("compute poi_history_click_rate from scratch")
             poi_history_click_rate = None
+            print("poi_history_click_rate is stored to %s" % self.config.poi_history_click_rate_file)
             return poi_history_click_rate
 
 
