@@ -3,7 +3,7 @@
 params = {
     'objective': 'binary',
     'metric': {'auc'},
-    'learning_rate': 0.05,
+    'learning_rate': 0.025,
     'num_leaves': 30,  # 叶子设置为 50 线下过拟合严重
     'min_sum_hessian_in_leaf': 0.1,
     'feature_fraction': 0.3,  # 相当于 colsample_bytree
@@ -14,25 +14,26 @@ params = {
     'num_thread': 30  # 线程数设置为真实的 CPU 数，一般12线程的机器有6个物理核
 }
 
-max_round = 10
+max_round = 10000
 # # cv_folds = 5
 # cv_folds = None
 early_stop_round = 30
 seed = 5
 
 save_model_path = "../Model/lgb_" + str(params['feature_fraction']) + "_" + str(params['bagging_fraction']) + ".txt"
-
 train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", 'pos',
-                        'new_day','new_time']
+                        'new_day','new_time', 'year', 'month',
+                        'pos_cate_min', 'pos_cate_max', 'pos_cate_median']
 
 # tester
-test_result_file = "../Result/result_upload_para_search.csv"
+test_result_file = "../Result/add_device_type.csv"
 test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", "ID",
-                       'new_day', 'new_time']
+                       'new_day', 'new_time', 'year', 'month',
+                       'pos_cate_min', 'pos_cate_max', 'pos_cate_median']
 
 
 # trainer and tester
-# categorical_feature = ['gender', 'job', 'cate_level1', 'cate_level2', 'cate_level3', 'area_id']
+# categorical_feature = ['gender', 'job', 'cate_level1',  'area_id']
 categorical_feature = None
 
 # data_loader
@@ -42,6 +43,7 @@ train_origin_file = "../ctr_data/Processed_Data_2/train_plain.csv"
 test_origin_file = "../ctr_data/Processed_Data_2/test_plain.csv"
 # data_augmentation = False
 data_augmentation = True
+neg_pos_fraction = 5
 
 
 #impr_click_action_feature
@@ -66,3 +68,9 @@ cate_history_click_rate_file = "../ctr_data/Processed_Data_2/cate_history_click_
 
 # pos_cate_feature_extractor
 pos_cate_feature_file = "../ctr_data/Processed_Data_2/pos_cate_feature.csv"
+
+# device_int_feature
+device_int_feature_file = "../ctr_data/Processed_Data_2/device_int_feature.csv"
+
+# poi_cate_click_rate
+poi_cate_click_feature_file = "../ctr_data/Processed_Data_2/poi_cate_click_feature.csv"

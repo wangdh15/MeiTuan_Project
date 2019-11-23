@@ -4,6 +4,7 @@ import pandas
 import numpy
 import pandas as pd
 import pickle
+import config
 from utils import check_path
 from feature_extractor.poi_feature import poi_feature_extractor
 from feature_extractor.user_feature import user_feature_extractor
@@ -11,6 +12,9 @@ from feature_extractor.distance_feature import distance_feature_extractor
 from feature_extractor.impr_click_action_feature import impr_click_action_feature_extractor
 from feature_extractor.cate_feature import cate_feature_extractor
 from feature_extractor.pos_feature import pos_feature_extractor
+from  feature_extractor.device_feature import device_feature_extractor
+from feature_extractor.poi_cate_click_rate import  poi_cate_click_feature_extractor
+
 
 class data_loader:
     '''
@@ -30,6 +34,8 @@ class data_loader:
         self.distance_feature_extractor = distance_feature_extractor(self.config, self.train_origin_data) # 距离特征提取器
         self.impr_click_action_feature_extractor = impr_click_action_feature_extractor(self.config, self.train_origin_data, self.test_origin_data)
         self.pos_feature_extractor = pos_feature_extractor(self.config, self.train_origin_data)
+        self.device_feature_extractor = device_feature_extractor(self.config, self.train_origin_data)
+        self.poi_cate_click_feature_extractor = poi_cate_click_feature_extractor(self.config, self.train_origin_data)
 
         # self.cate_feature_extractor = cate_feature_extractor(self.config, self.train_origin_data) # cate特征提取器
 #         self.read_data()
@@ -41,6 +47,7 @@ class data_loader:
         :return: train_origin_file, test_origin_file
         '''
         train_origin_data = pd.read_csv(self.config.train_origin_file)
+        train_origin_data = train_origin_data[train_origin_data['action'].isin([0, 1])]
         test_origin_data = pd.read_csv(self.config.test_origin_file)
         return train_origin_data, test_origin_data
 
@@ -74,6 +81,17 @@ class data_loader:
         train_merged_feature = pd.merge(train_merged_feature, pos_cate_feature, on=['poi_id', 'cate_id'], how='left')
         test_merged_feature = pd.merge(test_merged_feature, pos_cate_feature, on=['poi_id', 'cate_id'], how='left')
 
+        # 将device_type转为int
+        device_int_feature = self.device_feature_extractor.get_feature()
+        train_merged_feature = pd.merge(train_merged_feature, device_int_feature, on='device_type', how="left")
+        test_merged_feature = pd.merge(test_merged_feature, device_int_feature, on='device_type', how='left')
+
+        # 每个商家在每种cate的点击率
+        # poi_cate_click_feature = self.poi_cate_click_feature_extractor.get_feature()
+        # train_merged_feature = pd.merge(train_merged_feature, poi_cate_click_feature, on=['poi_id', 'cate_id'], how='left')
+        # test_merged_feature = pd.merge(test_merged_feature, poi_cate_click_feature, on=['poi_id', 'cate_id'], how='left')
+
+
         return train_merged_feature, test_merged_feature
 
 
@@ -84,7 +102,7 @@ class data_loader:
         '''
         # TODO 一些后处理的工作
 
-        train_merged_feature = train_merged_feature[train_merged_feature['action'].isin([0, 1])]
+
         # 数据扩增，对训练数据中的action为1的数据进行重复，使之达到正负样例比例为1：5
 
         # 将数据随机打乱
@@ -98,9 +116,10 @@ class data_loader:
 
         if self.config.data_augmentation:
             # 如果需要数据增强的话，对训练集中的label为1的数据进行重复
+            multiPlys = int(44 / self.config.neg_pos_fraction)
             train_set_1 = train_set[train_set['action'] == 1]
             train_set_0 = train_set[train_set['action'] == 0]
-            train_set_1_multi = pd.concat([train_set_1] * 9)
+            train_set_1_multi = pd.concat([train_set_1] * multiPlys)
             train_set = pd.concat([train_set_0, train_set_1_multi])
             train_set = train_set.sample(frac = 1.0)
 
@@ -153,5 +172,6 @@ class data_loader:
 
 if __name__ == '__main__':
 
-    pass
+    _data_loader =  data_loader(config)
+    _data_loader.get_data()
 

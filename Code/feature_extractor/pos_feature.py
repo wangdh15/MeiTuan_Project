@@ -31,10 +31,10 @@ class pos_feature_extractor:
             print("compute poi_deal_feature from scratch")
             pos_cate = self.train_origin_data[['poi_id','cate_id', 'pos']].groupby(['poi_id', 'cate_id'])
             # 平均值，最小值，最大值，中位数
-            pos_cate_avg = pos_cate.mean()
-            pos_cate_min = pos_cate.min()
-            pos_cate_max = pos_cate.max()
-            pos_cate_median = pos_cate.median()
+            pos_cate_avg = pos_cate.mean().rename(columns={'pos':"pos_cate_avg"})
+            pos_cate_min = pos_cate.min().rename(columns={'pos':"pos_cate_min"})
+            pos_cate_max = pos_cate.max().rename(columns={'pos':"pos_cate_max"})
+            pos_cate_median = pos_cate.median().rename(columns={'pos':"pos_cate_median"})
 
             pos_cate_feature = pd.merge(pos_cate_avg, pos_cate_min, on=['poi_id', 'cate_id'], how='left')
             pos_cate_feature = pd.merge(pos_cate_feature, pos_cate_max, on=['poi_id', 'cate_id'], how='left')
