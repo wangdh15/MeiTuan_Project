@@ -18,7 +18,7 @@ max_round = 10000
 # # cv_folds = 5
 # cv_folds = None
 early_stop_round = 30
-seed = 22
+seed = 0
 
 save_model_path = "../Model/lgb_" + str(params['feature_fraction']) + "_" + str(params['bagging_fraction']) + ".txt"
 train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", 'pos',
