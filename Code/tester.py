@@ -18,7 +18,7 @@ class tester:
         # TODO 在网络输入以前对测试集的一些预处理
         self.test_X_input = self.test_X.drop(self.config.test_droped_feature, axis=1)
 
-    def test(self, model, config):
+    def test(self, model, config, test_auc):
         '''
         测试过程，调用模型，并处理得到结果
         :param model: 来自trainer返回的训练好的模型
@@ -29,6 +29,7 @@ class tester:
         # 对测试数据进行处理，得到网络的输入数据
         # self.pre_process()
         self.config = config
+        self.config.test_result_file = self.config.test_result_file.replace('.csv','_test_auc:{}.csv'.format(test_auc))
         print("begin test.....")
         print('X_test.shape={}'.format(self.test_X.shape))
         y_pred_prob = model.predict(self.test_X)

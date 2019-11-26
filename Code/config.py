@@ -18,7 +18,7 @@ max_round = 10000
 # # cv_folds = 5
 # cv_folds = None
 early_stop_round = 30
-seed = 5
+seed = 22
 
 save_model_path = "../Model/lgb_" + str(params['feature_fraction']) + "_" + str(params['bagging_fraction']) + ".txt"
 train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", 'pos',
@@ -26,7 +26,7 @@ train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", 
                         'pos_cate_min', 'pos_cate_max', 'pos_cate_median']
 
 # tester
-test_result_file = "../Result/add_device_type.csv"
+test_result_file = "../Result/"+str(seed) + ".csv"
 test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", "ID",
                        'new_day', 'new_time', 'year', 'month',
                        'pos_cate_min', 'pos_cate_max', 'pos_cate_median']
@@ -37,22 +37,22 @@ test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "
 categorical_feature = None
 
 # data_loader
-# train_origin_file = "../ctr_data/Processed_Feature/train_origin_data.csv"
-# test_origin_file = "../ctr_data/Processed_Feature/test_origin_data.csv"
-train_origin_file = "../ctr_data/Processed_Data_2/train_plain.csv"
-test_origin_file = "../ctr_data/Processed_Data_2/test_plain.csv"
+# train_origin_file = "/data1/huxiao/datasets/ctr_dataProcessed_Feature/train_origin_data.csv"
+# test_origin_file = "/data1/huxiao/datasets/ctr_dataProcessed_Feature/test_origin_data.csv"
+train_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/train_plain.csv"
+test_origin_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/test_plain.csv"
 # data_augmentation = False
 data_augmentation = True
 neg_pos_fraction = 5
 
 
 #impr_click_action_feature
-train_time_feature_file = "../ctr_data/Processed_Data_2/train_time_feature.csv"
-test_time_feature_file = "../ctr_data/Processed_Data_2/test_time_feature.csv"
+train_time_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/train_time_feature.csv"
+test_time_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/test_time_feature.csv"
 
 # poi_feature_extractor
-poi_deal_feature_file = "../ctr_data/Processed_Data_2/poi_deal_feature.csv"
-poi_history_click_rate_file = "../ctr_data/Processed_Data_2/poi_history_click_rate.csv"
+poi_deal_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/poi_deal_feature.csv"
+poi_history_click_rate_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/poi_history_click_rate.csv"
 
 
 
@@ -60,17 +60,17 @@ poi_history_click_rate_file = "../ctr_data/Processed_Data_2/poi_history_click_ra
 
 
 # distance_feature_extractor
-train_distance_feature_file = "../ctr_data/Processed_Data_2/train_distance_feature.csv"
-test_distance_feature_file = "../ctr_data/Processed_Data_2/test_distance_feature.csv"
+train_distance_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/train_distance_feature.csv"
+test_distance_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/test_distance_feature.csv"
 
 # cate_feature_extractor
-cate_history_click_rate_file = "../ctr_data/Processed_Data_2/cate_history_click_rate.csv"
+cate_history_click_rate_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/cate_history_click_rate.csv"
 
 # pos_cate_feature_extractor
-pos_cate_feature_file = "../ctr_data/Processed_Data_2/pos_cate_feature.csv"
+pos_cate_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/pos_cate_feature.csv"
 
 # device_int_feature
-device_int_feature_file = "../ctr_data/Processed_Data_2/device_int_feature.csv"
+device_int_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/device_int_feature.csv"
 
 # poi_cate_click_rate
-poi_cate_click_feature_file = "../ctr_data/Processed_Data_2/poi_cate_click_feature.csv"
+poi_cate_click_feature_file = "/data1/huxiao/datasets/ctr_data/Processed_Data_2/poi_cate_click_feature.csv"

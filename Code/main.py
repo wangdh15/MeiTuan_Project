@@ -25,7 +25,7 @@ def mt_single():
     print("begin test")
     _tester = tester(data)
 
-    _tester.test(model, config)
+    _tester.test(model, config, test_auc)
 
 
 def grif_search():
