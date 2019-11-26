@@ -4,14 +4,14 @@ params = {
     'objective': 'binary',
     'metric': {'auc'},
     'learning_rate': 0.025,
-    'num_leaves': 30,  # 叶子设置为 50 线下过拟合严重
+    'num_leaves': 40,  # 叶子设置为 50 线下过拟合严重
     'min_sum_hessian_in_leaf': 0.1,
-    'feature_fraction': 0.3,  # 相当于 colsample_bytree
+    'feature_fraction': 0.2,  # 相当于 colsample_bytree
     'bagging_fraction': 0.5,  # 相当于 subsample
     'lambda_l1': 0,
     'lambda_l2': 5,
     # "device" : "gpu"
-    'num_thread': 30  # 线程数设置为真实的 CPU 数，一般12线程的机器有6个物理核
+    'num_thread': 1  # 线程数设置为真实的 CPU 数，一般12线程的机器有6个物理核
 }
 
 max_round = 10000
@@ -26,7 +26,7 @@ train_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", 
                         'pos_cate_min', 'pos_cate_max', 'pos_cate_median']
 
 # tester
-test_result_file = "../Result/add_device_type.csv"
+test_result_file = "../Result/add_zy_feature.csv"
 test_droped_feature = ["poi_id", "uuid", "request_id", "time", "request_time", "device_type", "ID",
                        'new_day', 'new_time', 'year', 'month',
                        'pos_cate_min', 'pos_cate_max', 'pos_cate_median']
@@ -74,3 +74,7 @@ device_int_feature_file = "../ctr_data/Processed_Data_2/device_int_feature.csv"
 
 # poi_cate_click_rate
 poi_cate_click_feature_file = "../ctr_data/Processed_Data_2/poi_cate_click_feature.csv"
+
+# zy feature
+train_zy_feature_file = "../ctr_data/Processed_Data_2/train_zy_feature.csv"
+test_zy_feature_file = "../ctr_data/Processed_Data_2/test_zy_feature.csv"

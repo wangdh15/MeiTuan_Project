@@ -14,6 +14,7 @@ from feature_extractor.cate_feature import cate_feature_extractor
 from feature_extractor.pos_feature import pos_feature_extractor
 from  feature_extractor.device_feature import device_feature_extractor
 from feature_extractor.poi_cate_click_rate import  poi_cate_click_feature_extractor
+from feature_extractor.zy_feature import zy_feature_extractor
 
 
 class data_loader:
@@ -36,6 +37,7 @@ class data_loader:
         self.pos_feature_extractor = pos_feature_extractor(self.config, self.train_origin_data)
         self.device_feature_extractor = device_feature_extractor(self.config, self.train_origin_data)
         self.poi_cate_click_feature_extractor = poi_cate_click_feature_extractor(self.config, self.train_origin_data)
+        self.zy_feature_extracotr = zy_feature_extractor(self.config, self.train_origin_data)
 
         # self.cate_feature_extractor = cate_feature_extractor(self.config, self.train_origin_data) # cate特征提取器
 #         self.read_data()
@@ -85,6 +87,11 @@ class data_loader:
         device_int_feature = self.device_feature_extractor.get_feature()
         train_merged_feature = pd.merge(train_merged_feature, device_int_feature, on='device_type', how="left")
         test_merged_feature = pd.merge(test_merged_feature, device_int_feature, on='device_type', how='left')
+
+        # zy_feature
+        train_zy_feature, test_zy_feature = self.zy_feature_extracotr.get_feature()
+        train_merged_feature = pd.merge(train_merged_feature, train_zy_feature.drop(['uuid', 'poi_id', 'datetime','weekday','hms','hour'], axis=1), on='request_id', how='left')
+        test_merged_feature = pd.merge(test_merged_feature, test_zy_feature.drop(['datetime','weekday','hms','hour'], axis=1), on='ID', how='left')
 
         # 每个商家在每种cate的点击率
         # poi_cate_click_feature = self.poi_cate_click_feature_extractor.get_feature()
