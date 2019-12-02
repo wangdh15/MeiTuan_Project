@@ -29,13 +29,13 @@ class tester:
         # 对测试数据进行处理，得到网络的输入数据
         # self.pre_process()
         self.config = config
-        self.config.test_result_file = self.config.test_result_file.replace('.csv','_test_auc:{}.csv'.format(test_auc))
+        # self.config.test_result_file = self.config.test_result_file)
         print("begin test.....")
         print('X_test.shape={}'.format(self.test_X.shape))
         y_pred_prob = model.predict(self.test_X)
         self.test_X['action'] = y_pred_prob
         self.test_X['ID'] = range(len(self.test_X))
-        self.test_X[['ID', 'action']].to_csv(self.config.test_result_file,index=False,header=True)
+        self.test_X[['ID', 'action']].to_csv(self.config.test_result_file.replace('.csv','_test_auc:{}.csv'.format(test_auc)),index=False,header=True)
         print("test Done")
         print("test result is saved to %s"%self.config.test_result_file)
         return self.test_X[['ID', 'action']]

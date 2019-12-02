@@ -89,9 +89,9 @@ class data_loader:
         test_merged_feature = pd.merge(test_merged_feature, device_int_feature, on='device_type', how='left')
 
         # zy_feature
-        train_zy_feature, test_zy_feature = self.zy_feature_extracotr.get_feature()
-        train_merged_feature = pd.merge(train_merged_feature, train_zy_feature.drop(['uuid', 'poi_id', 'datetime','weekday','hms','hour'], axis=1), on='request_id', how='left')
-        test_merged_feature = pd.merge(test_merged_feature, test_zy_feature.drop(['datetime','weekday','hms','hour'], axis=1), on='ID', how='left')
+        # train_zy_feature, test_zy_feature = self.zy_feature_extracotr.get_feature()
+        # train_merged_feature = pd.merge(train_merged_feature, train_zy_feature.drop(['uuid', 'poi_id', 'datetime','weekday','hms','hour'], axis=1), on='request_id', how='left')
+        # test_merged_feature = pd.merge(test_merged_feature, test_zy_feature.drop(['datetime','weekday','hms','hour'], axis=1), on='ID', how='left')
 
         # 每个商家在每种cate的点击率
         # poi_cate_click_feature = self.poi_cate_click_feature_extractor.get_feature()
@@ -113,7 +113,7 @@ class data_loader:
         # 数据扩增，对训练数据中的action为1的数据进行重复，使之达到正负样例比例为1：5
 
         # 将数据随机打乱
-        train_merged_feature = train_merged_feature.sample(frac=1.0)
+        train_merged_feature = train_merged_feature.sample(frac=1.0,random_state=self.config.seed)
 
         # 划分出训练集，验证集和测试集
         train_merged_feature = train_merged_feature.reset_index().drop(['index'], axis=1)
@@ -121,16 +121,18 @@ class data_loader:
         valid_set = train_merged_feature[int(0.8*len(train_merged_feature)) : int(0.9*len(train_merged_feature))]
         test_set = train_merged_feature[int(0.9*len(train_merged_feature)) : len(train_merged_feature)]
 
-        if self.config.data_augmentation:
+        if self.config.data_augmentation and self.config.multiplys>0:
             # 如果需要数据增强的话，对训练集中的label为1的数据进行重复
-            multiPlys = int(44 / self.config.neg_pos_fraction)
+            # multiPlys = int(44 / self.config.neg_pos_fraction)
+            multiPlys = self.config.multiplys
+            print('multiPlys:',multiPlys)
             train_set_1 = train_set[train_set['action'] == 1]
             train_set_0 = train_set[train_set['action'] == 0]
             train_set_1_multi = pd.concat([train_set_1] * multiPlys)
             train_set = pd.concat([train_set_0, train_set_1_multi])
             train_set = train_set.sample(frac = 1.0)
 
-        # 得到训练集/验证集/测试集的输入和label
+        # 得到训练集/验证集/测试集的输入和labelneg_pos_fraction
         train_X = train_set.drop(['action'], axis=1)
         train_Y = train_set['action']
         valid_X = valid_set.drop(['action'], axis=1)
